@@ -8,7 +8,7 @@ LocalStrategy = require('passport-local').Strategy
 
 passport.use('local.register', new LocalStrategy({
   usernameField: 'email',
-  passwordField: 'passwd'
+  passwordField: 'password'
 },
   function (email, password, done) {
     User.findOne({ email: email }, function (err, user) {
@@ -22,7 +22,9 @@ passport.use('local.register', new LocalStrategy({
       newUser.password = password
 
       newUser.save(function (err, user) {
+        if (err) { return done(err); }
 
+        return done(null, user);
       })
     })
   })
@@ -56,8 +58,10 @@ router.post('/signin', function (req, res, next) {
   res.send(req.body)
 });
 
-router.post('/register', function (req, res, next) {
-  res.send(req.body)
+router.post('/register', passport.authenticate('local.register', {
+  successRedirect: '/user/account',
+  failureRedirect: '/user/register',
 })
+)
 
 module.exports = router;
