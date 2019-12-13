@@ -41,27 +41,63 @@ passport.deserializeUser(function (id, done) {
   });
 });
 
+passport.use('local.login', new LocalStrategy({
+  usernameField: 'email',
+  passwordField: 'password'
+},
+  function (email, password, done) {
+    User.findOne({ email: email }, function (err, user) {
+      if (err) { return done(err) }
+
+      if (!user || !user.passwordVerify(password)) {
+        return done(null, false, { message: 'User not found' });
+      }
+
+      return done(null, user)
+    })
+  }))
+
+function auth(req, res, next) {
+  if (!req.isAuthenticated()) {
+    return res.redirect('/')
+  }
+  next()
+}
+
+function guest(req, res, next) {
+  if (req.isAuthenticated()) {
+    return res.redirect('/')
+  }
+  next()
+}
+
+
 /* GET home page. */
 router.get('/', function (req, res, next) {
   res.render('index', { title: 'Authentification' });
 });
-router.get('/signin', function (req, res, next) {
+router.get('/signin', guest, function (req, res, next) {
   res.render('user/signin', { title: 'Login' });
 });
-router.get('/account', function (req, res, next) {
+router.get('/account', auth, function (req, res, next) {
   res.render('user/account', { title: 'Account' });
 });
-router.get('/register', function (req, res, next) {
+router.get('/register', guest, function (req, res, next) {
   res.render('user/register', { title: 'Register' });
 });
-
-router.post('/signin', function (req, res, next) {
-  res.send(req.body)
+router.get('/logout', auth, function (req, res, next) {
+  req.logOut()
+  return res.redirect('/')
 });
 
-router.post('/register', passport.authenticate('local.register', {
+router.post('/register', passport.authenticate('local.login', {
   successRedirect: '/user/account',
   failureRedirect: '/user/register',
+}));
+
+router.post('/signin', passport.authenticate('local.register', {
+  successRedirect: '/user/account',
+  failureRedirect: '/user/signin',
 })
 )
 

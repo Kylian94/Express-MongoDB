@@ -17,4 +17,8 @@ userSchema.methods.passwordHash = (password) => {
     return this.password = bcrypt.hashSync(password, 12)
 }
 
+userSchema.methods.passwordVerify = function (password) {
+    return this.password = bcrypt.compareSync(password, this.password)
+}
+
 module.exports = mongoose.model('Users', userSchema)
