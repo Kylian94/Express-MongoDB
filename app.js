@@ -9,6 +9,9 @@ var userRouter = require('./routes/user');
 
 var mongoose = require('mongoose')
 
+var passport = require('passport')
+var session = require('express-session')
+
 mongoose.connect('mongodb://127.0.0.1:27017/auth', {
   useNewUrlParser: true,
   useUnifiedTopology: true
