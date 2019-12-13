@@ -3,6 +3,7 @@ var router = express.Router();
 
 var User = require('../models/User')
 var passport = require('passport')
+
 LocalStrategy = require('passport-local').Strategy
 
 
@@ -19,7 +20,7 @@ passport.use('local.register', new LocalStrategy({
       const newUser = new User;
 
       newUser.email = email
-      newUser.password = password
+      newUser.password = newUser.passwordHash(password)
 
       newUser.save(function (err, user) {
         if (err) { return done(err); }

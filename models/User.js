@@ -1,5 +1,5 @@
 var mongoose = require('mongoose')
-
+var bcrypt = require('bcrypt')
 var Schema = mongoose.Schema;
 
 var userSchema = new Schema({
@@ -12,5 +12,9 @@ var userSchema = new Schema({
         required: true
     }
 });
+
+userSchema.methods.passwordHash = (password) => {
+    return this.password = bcrypt.hashSync(password, 12)
+}
 
 module.exports = mongoose.model('Users', userSchema)
