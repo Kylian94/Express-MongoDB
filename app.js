@@ -7,6 +7,13 @@ var logger = require('morgan');
 var indexRouter = require('./routes/index');
 var userRouter = require('./routes/user');
 
+var mongoose = require('mongoose')
+
+mongoose.connect('mongodb://127.0.0.1:27017/auth', {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+});
+
 var app = express();
 
 // view engine setup
